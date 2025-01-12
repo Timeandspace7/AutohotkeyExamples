@@ -1,0 +1,36 @@
+#Requires AutoHotkey v2.0.18+
+#SingleInstance Force
+
+sapi := ComObject("SAPI.SpVoice")
+; sapi.Speak("Hello, this is AutoHotkey v2 speaking.")
+
+
+; 设置语音属性
+; sapi.Volume := 100  ; 音量 (0-100)
+sapi.Rate := 0      ; 语速 (-10 到 10，0为正常速度)
+
+; 热键：Ctrl+1 朗读剪贴板内容
+^1:: {
+    text := A_Clipboard
+    sapi.Speak(text)
+}
+
+; 热键：Ctrl+2 朗读选中的文本
+^2:: {
+    saved := A_Clipboard
+    ; MsgBox(saved)
+    A_Clipboard := ""  ; 清空剪贴板
+    Sleep(500)
+    Send "^c"         ; 复制选中文本
+    Sleep(500)
+    ; MsgBox(A_Clipboard)
+    if A_Clipboard    ; 如果成功复制了文本
+        sapi.Speak(A_Clipboard)
+    A_Clipboard := saved  ; 恢复原来的剪贴板内容
+}
+
+; 热键：Ctrl+3 停止朗读
+^3:: {
+    sapi.Skip("Sentence", 2147483647)  ; 跳过所有待朗读内容
+}
+
